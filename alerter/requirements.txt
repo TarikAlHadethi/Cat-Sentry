@@ -1,4 +1,4 @@
 paho-mqtt==1.6.1
 requests==2.32.4
 flask==3.0.3
-waitress==3.0.0
+waitress==3.0.2
