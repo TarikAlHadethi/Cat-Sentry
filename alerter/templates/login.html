@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF7EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#241A15" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Cat Sentry</title>
+<style>
+  :root{
+    --bg:#FFF7EF;--surface:#FFFFFF;--line:#F3E2D2;
+    --ink:#4A382E;--muted:#98826F;
+    --ginger:#E8934E;--ginger-deep:#C9702F;
+    --alert:#DD5A3E;--shadow:rgba(180,120,70,.16);
+    /* Ginger's own colours, fixed across themes so he never inverts. */
+    --fur:#E8933F;--muzzle:#FCF6EE;--ear-in:#F0B0A4;--iris:#B0AB57;
+    --pupil:#241B14;--nose:#C97F72;--tie:#8D7050;--tie-dark:#6E5539;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#241A15;--surface:#30231D;--line:#4B372D;
+      --ink:#FBEFE4;--muted:#BA9E8C;
+      --ginger:#FF9E52;--ginger-deep:#FFB273;
+      --alert:#FF8266;--shadow:rgba(0,0,0,.4);
+      --fur:#EE9C4B;
+    }
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{background:var(--bg)}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+    min-height:100dvh;display:grid;place-items:center;
+    padding:calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+  }
+  :focus-visible{outline:3px solid var(--ginger-deep);outline-offset:3px;border-radius:6px}
+  .card{width:100%;max-width:370px;text-align:center}
+  /* He arrives awake and blinks hello. Starting from closed left him looking
+     blind, because this page has no resting closed-eye curve to show. The
+     curve is keyed to the same frames so the blink never shows blank fur. */
+  .lid{animation:hello 3.4s ease .5s both}
+  .shut{animation:hello-shut 3.4s ease .5s both}
+  @keyframes hello{
+    0%,38%{transform:translateY(0)}
+    44%{transform:translateY(20px)}
+    50%,100%{transform:translateY(0)}
+  }
+  @keyframes hello-shut{
+    0%,40%{opacity:0}
+    44%{opacity:1}
+    48%,100%{opacity:0}
+  }
+
+  .face{width:196px;height:183px;margin:0 auto 4px}
+  .cat{width:100%;height:100%}
+  /* Same-colour stroke with round joins: no sharp corners anywhere. */
+  .head{fill:var(--fur)}
+  .ear{fill:var(--fur);stroke:var(--fur);stroke-width:7;stroke-linejoin:round}
+  .inner-ear{fill:var(--ear-in);stroke:var(--ear-in);stroke-width:4.5;stroke-linejoin:round}
+  .muzzle{fill:var(--muzzle)}
+  .iris{fill:var(--iris)}
+  .pupil{fill:var(--pupil)}
+  .glint{fill:#FFFFFF}
+  /* Lid is a rect clipped to the eye, so it can only paint inside the eye. */
+  .lid{fill:var(--fur);transform:translateY(0)}
+  .shut{fill:none;stroke:var(--pupil);stroke-width:3.2;stroke-linecap:round;opacity:0}
+  .zs{opacity:0}
+  .nose{fill:var(--nose);stroke:var(--nose);stroke-width:2.4;stroke-linejoin:round}
+  .mouth{fill:none;stroke:var(--pupil);stroke-width:2;stroke-linecap:round;opacity:.45}
+  .whisker{stroke:var(--muted);stroke-width:2;stroke-linecap:round;opacity:.45}
+  .tie{fill:var(--tie);stroke:var(--tie);stroke-width:3.4;stroke-linejoin:round}
+  .tie-knot{fill:var(--tie-dark)}
+  .tie-weave{fill:none;stroke:var(--tie-dark);stroke-width:1.2;opacity:.4}
+  .zzz{fill:var(--muted);font-size:17px;font-weight:700;font-family:var(--sans)}
+  .z2{font-size:13px}
+  /* locked out: he gives up and shuts his eyes, no hello blink */
+  .locked-face .lid{transform:translateY(20px);animation:none}
+  .locked-face .shut{opacity:1;animation:none}
+  .locked-face .zs{opacity:1}
+
+  h1{margin:6px 0 4px;font-size:25px;font-weight:800;letter-spacing:-.02em}
+  .sub{margin:0 0 24px;color:var(--muted);font-size:15.5px}
+
+  input{
+    width:100%;min-height:62px;padding:0 16px;text-align:center;
+    background:var(--surface);border:1.5px solid var(--line);border-radius:18px;
+    color:var(--ink);font-family:var(--sans);font-size:24px;font-weight:700;
+    letter-spacing:.4em;text-indent:.4em;
+  }
+  input::placeholder{color:var(--line);letter-spacing:.3em}
+  input:focus{border-color:var(--ginger)}
+  button{
+    width:100%;min-height:60px;margin-top:12px;border-radius:18px;border:0;
+    background:var(--ginger);color:#3A2213;
+    font-family:var(--sans);font-size:17.5px;font-weight:700;cursor:pointer;
+    box-shadow:0 8px 20px var(--shadow);
+    transition:transform .12s ease,filter .12s ease;
+  }
+  button:hover{filter:brightness(1.04)}
+  button:active{transform:scale(.985)}
+
+  .msg{
+    display:flex;gap:9px;align-items:flex-start;justify-content:center;
+    margin:18px 2px 0;color:var(--alert);font-size:14.5px;text-align:left;
+  }
+  .msg svg{width:17px;height:17px;flex:none;margin-top:3px}
+  .locked{margin:0;color:var(--muted);font-size:15.5px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="card">
+
+    <div class="face{{ ' locked-face' if wait else '' }}">
+      {% include "_cat.html" %}
+    </div>
+
+    {% if wait %}
+      <h1>Just a moment</h1>
+      <p class="sub">Too many wrong PINs.</p>
+      <p class="locked">Try again in {{ (wait // 60) + 1 }} minute{{ '' if (wait // 60) + 1 == 1 else 's' }}.</p>
+    {% else %}
+      <h1>Hello again</h1>
+      <p class="sub">Pop in your PIN to look after him.</p>
+      <form method="post" action="/login">
+        <input type="password" name="pin" inputmode="numeric" pattern="[0-9]*"
+               autocomplete="current-password" placeholder="••••" maxlength="8"
+               aria-label="PIN" autofocus required>
+        <button type="submit">Unlock</button>
+      </form>
+      {% if error %}
+        <p class="msg">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.3" fill="currentColor"/></svg>
+          {{ error }}
+        </p>
+      {% endif %}
+    {% endif %}
+
+  </div>
+</body>
+</html>

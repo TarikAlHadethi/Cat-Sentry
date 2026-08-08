@@ -1,0 +1,121 @@
+### Cat Sentry — Frigate configuration
+###
+### Camera credentials are injected from .env at runtime via {FRIGATE_*}
+### substitution, so this file contains no secrets and is safe to commit.
+
+mqtt:
+  enabled: true
+  host: mosquitto
+  port: 1883
+  topic_prefix: frigate
+  client_id: frigate
+
+detectors:
+  # CPU detector. One camera, motion-gated, in an otherwise static dark room
+  # is a trivial load — this avoids BIOS changes and device passthrough as
+  # failure modes during setup. See the OpenVINO block at the bottom to switch.
+  cpu1:
+    type: cpu
+    num_threads: 3
+
+# --------------------------------------------------------------------
+# Nothing is written to disk except tuning snapshots.
+# This is a bedroom; the correct amount of retained footage is zero.
+# --------------------------------------------------------------------
+record:
+  enabled: false
+
+snapshots:
+  enabled: true            # <-- SET false AFTER THE TUNING PERIOD
+  timestamp: true
+  bounding_box: true
+  retain:
+    default: 14
+
+logger:
+  default: info
+
+cameras:
+  bedroom:
+    enabled: true
+
+    ffmpeg:
+      inputs:
+        - path: rtsp://{FRIGATE_CAM_USER}:{FRIGATE_CAM_PASSWORD}@{FRIGATE_CAM_IP}:554/stream1
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+      # No hwaccel — CPU path. After enabling the iGPU in BIOS, add:
+      #   hwaccel_args: preset-vaapi
+
+    detect:
+      enabled: true
+      width: 1920
+      height: 1080
+      fps: 10              # 10 roughly doubles chances-per-crossing vs 5
+      max_disappeared: 25
+
+    objects:
+      track:
+        - cat
+      filters:
+        cat:
+          # Deliberately permissive. A false ping costs one WhatsApp message;
+          # a miss costs a soiled mattress. Optimising for precision here
+          # would be optimising the wrong metric.
+          min_score: 0.45
+          threshold: 0.55
+          min_area: 1200
+          max_area: 200000
+
+    motion:
+      threshold: 28
+      contour_area: 12
+      improve_contrast: true
+      # ------------------------------------------------------------------
+      # BED MASK — the bed is excluded at the MOTION stage, so frames where
+      # the only movement is on the bed never reach the detector at all.
+      # There is therefore no confidence threshold at which the system could
+      # start alerting on the human in the bed.
+      #
+      # Draw it: Frigate UI > bedroom > Settings > Motion Mask.
+      # Paste the generated coordinates between the markers below.
+      # ------------------------------------------------------------------
+      mask:
+        ### MASK-START
+        # NOTE: write whole-number coordinates as 1.0, never 1.000. Frigate
+        # decides relative-vs-pixel with a *string* comparison (p > "1.0"), so
+        # "1.000" sorts greater and the config is rejected as invalid.
+        - 0.000,0.350,0.550,0.300,0.600,1.0,0.000,1.0   # PLACEHOLDER — replace
+        ### MASK-END
+
+    zones:
+      floor:
+        # ----------------------------------------------------------------
+        # TRIGGER ZONE. Cover the floor generously, especially the side he
+        # actually jumps down on. Draw in: Settings > Zones.
+        # ----------------------------------------------------------------
+        ### ZONE-START
+        coordinates: 0.550,0.320,1.0,0.300,1.0,1.0,0.600,1.0   # PLACEHOLDER — replace
+        ### ZONE-END
+        objects:
+          - cat
+        inertia: 3         # must persist 3 frames — stops a dangling paw firing
+        loitering_time: 0
+
+# --------------------------------------------------------------------
+# OPTIONAL: iGPU acceleration.
+# If the host has an Intel integrated GPU, to use it:
+#   1. Enable "iGPU Multi-Monitor" in BIOS (off by default with a dGPU fitted)
+#   2. Uncomment the devices: block for frigate in docker-compose.yml
+#   3. Replace the detectors: block above with:
+#
+#        detectors:
+#          ov:
+#            type: openvino
+#            device: GPU
+#
+#   4. Add to the camera's ffmpeg block:  hwaccel_args: preset-vaapi
+# --------------------------------------------------------------------
+
+version: 0.17

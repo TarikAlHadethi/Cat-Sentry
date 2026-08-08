@@ -1,0 +1,9 @@
+# Normalise everything to LF in the repository. Without this, files committed
+# from Windows carry CRLF, and a shell script or Dockerfile with CRLF fails on
+# Linux with errors like `bash: $'\r': command not found`.
+* text=auto eol=lf
+
+# Never let these be touched by line-ending conversion.
+*.jpg binary
+*.png binary
+*.db  binary

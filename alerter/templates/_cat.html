@@ -1,0 +1,69 @@
+{#- Ginger's face. Shared by the control page and the login screen.
+
+    Eyelids use the standard character-animation approach: each eye is a
+    clipping mask, and the lid is a plain rectangle that slides up and down
+    *inside* that mask. Because the lid can only ever paint within the eye
+    shape, it can never spill onto the forehead as a scowl or creep over the
+    ears — which is exactly what a free-floating lid shape did.
+
+    Everything is rounded: the head is an organic wider-than-tall path, and
+    the ears, inner ears, nose and bowtie are drawn with a same-colour stroke
+    and round line joins so no corner comes to a point. -#}
+<svg class="cat" viewBox="0 0 120 112" aria-hidden="true" focusable="false">
+  <defs>
+    <clipPath id="eyeL"><ellipse cx="44" cy="56" rx="8.6" ry="9"/></clipPath>
+    <clipPath id="eyeR"><ellipse cx="76" cy="56" rx="8.6" ry="9"/></clipPath>
+  </defs>
+
+  <path class="head" d="M60 22 C81 22, 97 33, 98.5 53 C100 73, 86 95, 60 95
+                        C34 95, 20 73, 21.5 53 C23 33, 39 22, 60 22 Z"/>
+
+  <ellipse class="muzzle" cx="51" cy="72" rx="13" ry="10"/>
+  <ellipse class="muzzle" cx="69" cy="72" rx="13" ry="10"/>
+  <ellipse class="muzzle" cx="60" cy="78" rx="11.5" ry="8.5"/>
+
+  <g clip-path="url(#eyeL)">
+    <ellipse class="iris" cx="44" cy="56" rx="8.6" ry="9"/>
+    <ellipse class="pupil" cx="44" cy="56" rx="5" ry="5"/>
+    <circle class="glint" cx="46.8" cy="52.4" r="2.4"/>
+    <circle class="glint" cx="41.2" cy="59.6" r="1.1"/>
+    <rect class="lid" x="34" y="26" width="21" height="20"/>
+  </g>
+  <g clip-path="url(#eyeR)">
+    <ellipse class="iris" cx="76" cy="56" rx="8.6" ry="9"/>
+    <ellipse class="pupil" cx="76" cy="56" rx="5" ry="5"/>
+    <circle class="glint" cx="78.8" cy="52.4" r="2.4"/>
+    <circle class="glint" cx="73.2" cy="59.6" r="1.1"/>
+    <rect class="lid" x="65" y="26" width="21" height="20"/>
+  </g>
+
+  <path class="shut" d="M38 56 q6 5.5 12 0"/>
+  <path class="shut" d="M70 56 q6 5.5 12 0"/>
+
+  <g class="zs">
+    <text class="zzz" x="94" y="28">z</text>
+    <text class="zzz z2" x="104" y="15">z</text>
+  </g>
+
+  {#- Ears after the eyes so nothing can overlap the pink inner ear -#}
+  <path class="ear" d="M30 45 L37 17 L59 31 Z"/>
+  <path class="ear" d="M90 45 L83 17 L61 31 Z"/>
+  <path class="inner-ear" d="M37 41 L41.5 25 L53 33 Z"/>
+  <path class="inner-ear" d="M83 41 L78.5 25 L67 33 Z"/>
+
+  <path class="nose" d="M55.8 64.5 h8.4 q0 4.6 -4.2 6.4 q-4.2 -1.8 -4.2 -6.4 z"/>
+  <path class="mouth" d="M60 72 q-3.6 3.8 -6.8 1"/>
+  <path class="mouth" d="M60 72 q3.6 3.8 6.8 1"/>
+
+  <path class="whisker" d="M13 60 L32 65"/>
+  <path class="whisker" d="M12 70 L32 70"/>
+  <path class="whisker" d="M15 80 L33 75"/>
+  <path class="whisker" d="M107 60 L88 65"/>
+  <path class="whisker" d="M108 70 L88 70"/>
+  <path class="whisker" d="M105 80 L87 75"/>
+
+  <path class="tie" d="M59 98 L43 91 L43 105 Z"/>
+  <path class="tie" d="M61 98 L77 91 L77 105 Z"/>
+  <path class="tie-weave" d="M47 94 L47 102 M52 93 L52 103 M68 93 L68 103 M73 94 L73 102"/>
+  <rect class="tie-knot" x="56" y="93.5" width="8" height="9" rx="3.5"/>
+</svg>

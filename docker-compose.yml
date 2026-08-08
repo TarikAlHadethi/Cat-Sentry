@@ -1,0 +1,102 @@
+### Cat Sentry
+###
+### Exposure policy:
+###   mosquitto  — no host ports at all, internal network only
+###   frigate    — 127.0.0.1 only; the UI is for setup and tuning, not the phone
+###   alerter    — LAN-visible because a phone needs it, so it is PIN-protected
+
+name: cat-sentry
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: cs-mosquitto
+    restart: unless-stopped
+    command: mosquitto -c /mosquitto-no-auth.conf
+    networks: [sentry]
+    # Intentionally no `ports:` — nothing outside this network can reach it.
+    # Start as the image's own mosquitto user (uid/gid 1883) rather than as
+    # root. The entrypoint would otherwise start as root and drop privileges,
+    # which needs SETUID/SETGID — capabilities cap_drop: [ALL] removes, so the
+    # broker would terminate on startup. Starting unprivileged is stronger than
+    # granting those capabilities back.
+    user: "1883:1883"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 2 mosquitto_sub -t '$$SYS/#' -C 1 -W 1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    container_name: cs-frigate
+    restart: unless-stopped
+    depends_on: [mosquitto]
+    networks: [sentry]
+    # 1920x1080 @ 10fps needs ~178MB of frame buffer; Frigate warns below that.
+    shm_size: "256mb"
+    env_file: [.env]
+    environment:
+      # Frigate substitutes any FRIGATE_*-prefixed var into config.yml,
+      # which keeps camera credentials out of the committed config.
+      FRIGATE_CAM_USER: ${CAM_USER}
+      FRIGATE_CAM_PASSWORD: ${CAM_PASSWORD}
+      FRIGATE_CAM_IP: ${CAM_IP}
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+      # Frames live in RAM and never touch the SSD.
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 600000000
+    ports:
+      - "127.0.0.1:5000:5000"
+    security_opt:
+      - no-new-privileges:true
+    # iGPU acceleration — uncomment after enabling the iGPU in BIOS:
+    # devices:
+    #   - /dev/dri/renderD128
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:5000/api/version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  alerter:
+    build: ./alerter
+    container_name: cs-alerter
+    restart: unless-stopped
+    depends_on: [mosquitto]
+    networks: [sentry]
+    env_file: [.env]
+    environment:
+      MQTT_HOST: mosquitto
+      # Set TZ in .env to your own zone — the arm/disarm schedule is evaluated
+      # in the container's local time, so leaving this at UTC will shift it.
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./alerter/state:/state
+    ports:
+      - "8080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request;urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=3)\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+networks:
+  sentry:
+    driver: bridge

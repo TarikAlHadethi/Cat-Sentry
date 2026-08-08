@@ -1,0 +1,20 @@
+# secrets — never commit
+.env
+
+# runtime state
+alerter/state/
+scripts/first-frame.jpg
+
+# Frigate owns config/ at runtime and writes its database, a JWT signing
+# secret, config backups, caches and WAL files there. Ignore the whole
+# directory except the template, so any new runtime file Frigate invents
+# can never be committed by accident.
+config/*
+!config/config.yml.template
+
+# local UI preview scratch
+.uipreview/
+
+__pycache__/
+*.pyc
+.DS_Store
