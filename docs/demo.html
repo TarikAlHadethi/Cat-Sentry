@@ -5,78 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFF7EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#241A15" media="(prefers-color-scheme: dark)">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Cat Sentry</title>
+<title>Cat Sentry — interactive demo</title>
 <style>
-  /* Palette taken from Ginger himself: a soft cream-marmalade tabby, white
-     muzzle, hazel eyes, dusty pink nose, brown tweed bowtie.
-     Light by default; the dark variant stays warm (never black) so it does
-     not dazzle anyone checking it at 3am. */
   :root{
-    --bg:#FFF7EF;
-    --surface:#FFFFFF;
-    --surface-2:#FFF2E6;
-    --line:#F3E2D2;
-    --ink:#4A382E;
-    --muted:#98826F;
-    --ginger:#E8934E;
-    --ginger-deep:#C9702F;
-    --ginger-soft:#FFE6CC;
-    --mint:#5EAE97;
-    --mint-soft:#DEF1EA;
-    --alert:#DD5A3E;
+    --bg:#FFF7EF; --surface:#FFFFFF; --surface-2:#FFF2E6; --line:#F3E2D2;
+    --ink:#4A382E; --muted:#98826F;
+    --ginger:#E8934E; --ginger-deep:#C9702F; --ginger-soft:#FFE6CC;
+    --mint:#5EAE97; --mint-soft:#DEF1EA; --alert:#DD5A3E;
     --shadow:rgba(180,120,70,.16);
-    /* Ginger's own colours, fixed across themes so he never inverts.
-       He keeps them while napping too — desaturating him just looked ill. */
-    --fur:#E8933F;
-    --muzzle:#FCF6EE;
-    --ear-in:#F0B0A4;
-    --iris:#B0AB57;
-    --pupil:#241B14;
-    --nose:#C97F72;
-    --tie:#8D7050;
-    --tie-dark:#6E5539;
+    --fur:#E8933F; --muzzle:#FCF6EE; --ear-in:#F0B0A4;
+    --iris:#B0AB57; --pupil:#241B14; --nose:#C97F72;
+    --tie:#8D7050; --tie-dark:#6E5539;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
     --r:22px;
   }
   @media (prefers-color-scheme:dark){
     :root{
-      --bg:#241A15;
-      --surface:#30231D;
-      --surface-2:#3B2B23;
-      --line:#4B372D;
-      --ink:#FBEFE4;
-      --muted:#BA9E8C;
-      --ginger:#FF9E52;
-      --ginger-deep:#FFB273;
-      --ginger-soft:#4A3223;
-      --mint:#7CC8B0;
-      --mint-soft:#2B3F38;
-      --alert:#FF8266;
-      --shadow:rgba(0,0,0,.4);
-      --fur:#EE9C4B;
+      --bg:#241A15; --surface:#30231D; --surface-2:#3B2B23; --line:#4B372D;
+      --ink:#FBEFE4; --muted:#BA9E8C;
+      --ginger:#FF9E52; --ginger-deep:#FFB273; --ginger-soft:#4A3223;
+      --mint:#7CC8B0; --mint-soft:#2B3F38; --alert:#FF8266;
+      --shadow:rgba(0,0,0,.4); --fur:#EE9C4B;
     }
   }
-
   *,*::before,*::after{box-sizing:border-box}
   html{background:var(--bg)}
   body{
-    margin:0;background:var(--bg);color:var(--ink);
-    font-family:var(--sans);font-size:16px;line-height:1.5;
-    -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;
   }
-  form{margin:0}
   button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
   :focus-visible{outline:3px solid var(--ginger-deep);outline-offset:3px;border-radius:6px}
 
   .app{
     max-width:440px;margin:0 auto;
-    padding:calc(14px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom));
+    padding:14px 20px 28px;
     display:flex;flex-direction:column;gap:20px;
   }
 
-  /* ---------------- header ---------------- */
   .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
   .brand{display:flex;align-items:center;gap:9px;margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
   .brand .paw{width:22px;height:22px;color:var(--ginger)}
@@ -86,7 +52,6 @@
   }
   .lock:hover{border-color:var(--ginger);color:var(--ginger-deep)}
 
-  /* ---------------- Ginger ---------------- */
   .hero{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:6px 0 2px}
   .face{width:216px;height:202px;position:relative;display:grid;place-items:center}
   .halo{
@@ -94,14 +59,9 @@
     background:radial-gradient(circle, var(--ginger-soft) 0%, transparent 70%);opacity:0;
   }
   .watching .halo{opacity:1;animation:purr 4.5s ease-in-out infinite}
-  @keyframes purr{
-    0%,100%{transform:scale(.94);opacity:.75}
-    50%{transform:scale(1.06);opacity:1}
-  }
+  @keyframes purr{0%,100%{transform:scale(.94);opacity:.75}50%{transform:scale(1.06);opacity:1}}
   .cat{width:100%;height:100%;position:relative}
 
-  /* A same-colour stroke with round joins rounds off every corner, so
-     nothing in the drawing has a sharp point. */
   .head{fill:var(--fur)}
   .ear{fill:var(--fur);stroke:var(--fur);stroke-width:7;stroke-linejoin:round}
   .inner-ear{fill:var(--ear-in);stroke:var(--ear-in);stroke-width:4.5;stroke-linejoin:round}
@@ -124,90 +84,45 @@
   .z2{font-size:13px}
   .napping .zzz{animation:drift 3.4s ease-in-out infinite}
   .napping .z2{animation-delay:.7s}
-  @keyframes drift{
-    0%,100%{opacity:.25;transform:translateY(2px)}
-    50%{opacity:.9;transform:translateY(-3px)}
-  }
+  @keyframes drift{0%,100%{opacity:.25;transform:translateY(2px)}50%{opacity:.9;transform:translateY(-3px)}}
 
-  /* --- the wake-up ---
-     Heavy sleepy lids + narrow pupils, then the lids lift as the pupils
-     dilate. The lids also cover the top of the slit, which keeps him
-     looking drowsy rather than severe.
-     Resting state is fully awake, so if these animations never run he
-     simply looks alert — never broken. */
-  /* Eyelid state machine. The lid is a rect clipped to the eye ellipse, so
-     these translations can only ever reveal or hide the eye itself — it can
-     never paint onto the forehead or over the ears.
-     The rect sits at y=26 h=20, so translateY(0) parks it just above the eye
-     (open), +20 puts it fully below (closed), +10 is the sleepy half-lid. */
   .lid{fill:var(--fur)}
   .watching .lid{transform:translateY(0)}
   .napping .lid{transform:translateY(20px)}
-
-  /* waking: sleepy lids and narrowed pupils, then lids lift as pupils dilate */
   .anim-wake .lid{animation:lid-open 2.25s cubic-bezier(.45,.05,.2,1) forwards}
   .anim-wake .pupil{animation:dilate 2.25s cubic-bezier(.45,.05,.2,1) forwards}
-  @keyframes lid-open{
-    0%,58%{transform:translateY(10px)}
-    88%,100%{transform:translateY(0)}
-  }
-  @keyframes dilate{
-    /* a soft vertical oval, not a needle — anything narrower reads as a fang */
-    0%,58%{rx:3.2px;ry:6.4px}
-    88%,100%{rx:5px;ry:5px}
-  }
-
-  /* dozing off: pupils narrow, lids drift shut, then the closed line and
-     the zs fade in behind them */
+  @keyframes lid-open{0%,58%{transform:translateY(10px)}88%,100%{transform:translateY(0)}}
+  @keyframes dilate{0%,58%{rx:3.2px;ry:6.4px}88%,100%{rx:5px;ry:5px}}
   .anim-sleep .lid{animation:lid-close 1.15s cubic-bezier(.4,0,.35,1) forwards}
   .anim-sleep .pupil{animation:narrow 1.15s ease forwards}
-  /* the closed curve has to arrive as the lids land, or there is a beat
-     where the eye is a blank patch of fur */
   .anim-sleep .shut{animation:fade-in .3s ease .6s backwards}
   .anim-sleep .zs{animation:fade-in .5s ease 1s backwards}
-  @keyframes lid-close{
-    0%{transform:translateY(0)}
-    100%{transform:translateY(20px)}
-  }
-  @keyframes narrow{
-    0%{rx:5px;ry:5px}
-    100%{rx:3.4px;ry:6px}
-  }
+  @keyframes lid-close{0%{transform:translateY(0)}100%{transform:translateY(20px)}}
+  @keyframes narrow{0%{rx:5px;ry:5px}100%{rx:3.4px;ry:6px}}
   @keyframes fade-in{from{opacity:0}}
 
   .status{margin:2px 0 0;font-size:32px;font-weight:800;letter-spacing:-.025em}
   .watching .status{color:var(--ginger-deep)}
-  /* Both state blurbs are kept to the same character count so they wrap to
-     the same number of lines — otherwise the card visibly grows when he
-     wakes up. min-height stops a short one collapsing to a single line. */
   .blurb{margin:0;color:var(--muted);font-size:15.5px;max-width:30ch;min-height:47px}
 
-  /* ---------------- waking bar ---------------- */
-  /* Sits on top of the blurb rather than above it, so waking up neither
-     shifts the page nor leaves a hole once the bar has gone. */
   .waking{
     position:absolute;left:50%;bottom:0;transform:translateX(-50%);
-    width:min(280px,100%);margin:0;
-    animation:waking-out .45s ease 2.05s forwards;
+    width:min(280px,100%);margin:0;display:none;
   }
+  .anim-wake .waking{display:block;animation:waking-out .45s ease 2.05s forwards}
   .anim-wake .blurb{animation:blurb-back 2.5s ease forwards}
   @keyframes blurb-back{0%,76%{opacity:0}100%{opacity:1}}
   .waking p{margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
   .track{height:7px;background:var(--line);border-radius:99px;overflow:hidden}
-  .track i{
-    display:block;height:100%;border-radius:99px;background:var(--ginger);
-    transform:scaleX(0);transform-origin:left;animation:fill 1.35s cubic-bezier(.35,0,.25,1) forwards;
-  }
+  .track i{display:block;height:100%;border-radius:99px;background:var(--ginger);transform:scaleX(0);transform-origin:left}
+  .anim-wake .track i{animation:fill 1.35s cubic-bezier(.35,0,.25,1) forwards}
   @keyframes fill{to{transform:scaleX(1)}}
-  /* fade only — collapsing the height would shunt the whole page upwards */
   @keyframes waking-out{to{opacity:0}}
 
-  /* ---------------- primary action ---------------- */
   .go{
     width:100%;min-height:64px;border-radius:20px;border:0;
     font-size:18.5px;font-weight:700;letter-spacing:-.01em;
-    background:var(--ginger);color:#3A2213;
-    box-shadow:0 8px 20px var(--shadow);
+    background:var(--ginger);color:#3A2213;box-shadow:0 8px 20px var(--shadow);
     transition:transform .12s ease,filter .12s ease;
   }
   .go:hover{filter:brightness(1.04)}
@@ -215,20 +130,13 @@
   .watching .go{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
   .watching .go:hover{background:var(--surface-2)}
 
-  /* ---------------- facts ---------------- */
   .card{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:2px 18px;margin:0}
   .fact{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 0;border-top:1.5px solid var(--line)}
   .fact:first-child{border-top:0}
   .fact dt{color:var(--muted);font-size:14.5px;flex:none}
   .fact dd{margin:0;text-align:right;font-size:15.5px;font-weight:600}
   .fact dd.soft{color:var(--muted);font-weight:400}
-  .nudge{
-    display:flex;gap:11px;align-items:flex-start;margin:0;
-    padding:14px 0;border-top:1.5px solid var(--line);color:var(--alert);font-size:14.5px;
-  }
-  .nudge svg{width:18px;height:18px;flex:none;margin-top:2px}
 
-  /* ---------------- test ---------------- */
   .test{
     width:100%;min-height:52px;border-radius:16px;
     background:var(--mint-soft);border:1.5px solid transparent;
@@ -238,7 +146,6 @@
   .test:hover{border-color:var(--mint)}
   .test svg{width:18px;height:18px}
 
-  /* ---------------- activity ---------------- */
   .head2{margin:0 0 2px 3px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .events{list-style:none;margin:0;padding:0}
   .ev{display:flex;align-items:center;gap:12px;padding:12px 2px;border-top:1.5px solid var(--line);font-size:15px}
@@ -250,25 +157,41 @@
   .ev-alert span{color:var(--ink);font-weight:700}
   .ev-arm .paw,.ev-test .paw{color:var(--ginger)}
   .ev-seen .paw{color:var(--muted);opacity:.6}
-  .nothing{margin:0;padding:16px 2px;color:var(--muted);font-size:15px;display:flex;align-items:center;gap:10px}
-  .nothing svg{width:20px;height:20px;color:var(--line);flex:none}
+  .ev.new{animation:slide-in .35s ease}
+  @keyframes slide-in{from{opacity:0;transform:translateY(-6px)}}
 
-  @media (min-width:680px){
-    body{min-height:100vh;display:grid;place-items:center;padding:32px 0}
-    .app{
-      width:468px;background:var(--surface);
-      border:1.5px solid var(--line);border-radius:34px;
-      padding:20px 26px 30px;box-shadow:0 24px 60px var(--shadow);
-    }
-    .card{background:var(--surface-2)}
+  /* ---------- demo-only chrome ---------- */
+  .simulate{
+    width:100%;min-height:50px;border-radius:14px;
+    background:transparent;border:1.5px dashed var(--line);
+    color:var(--muted);font-size:14.5px;font-weight:600;
   }
+  .simulate:hover{border-color:var(--ginger);color:var(--ginger-deep)}
+  .note{
+    margin:0;font-size:12.5px;line-height:1.5;color:var(--muted);text-align:center;
+    border-top:1.5px solid var(--line);padding-top:14px;
+  }
+
+  .toasts{
+    position:fixed;left:50%;transform:translateX(-50%);
+    bottom:16px;width:min(360px,calc(100% - 24px));
+    display:flex;flex-direction:column;gap:8px;z-index:50;pointer-events:none;
+  }
+  .toast{
+    background:#229ED9;color:#fff;border-radius:14px;padding:12px 15px;
+    box-shadow:0 12px 30px rgba(0,0,0,.28);
+    display:flex;gap:11px;align-items:flex-start;
+    opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease;
+  }
+  .toast.in{opacity:1;transform:none}
+  .toast svg{width:20px;height:20px;flex:none;margin-top:1px}
+  .toast b{display:block;font-size:13.5px;margin-bottom:2px}
+  .toast span{font-size:13.5px;line-height:1.45;opacity:.95}
+
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none!important;transition:none!important}
-    .waking{display:none}
+    .waking{display:none!important}
   }
-body{background:var(--bg)}
-.app{width:auto!important;max-width:none!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;margin:0!important}
-.inert button{cursor:default}
 </style>
 </head>
 <body>
@@ -283,158 +206,196 @@ body{background:var(--bg)}
   </symbol>
 </svg>
 
-<main class="app watching">
+<main class="app napping" id="app">
 
   <header class="bar">
     <p class="brand"><svg class="paw" aria-hidden="true"><use href="#paw"/></svg>Cat&nbsp;Sentry</p>
-    <div class="inert">
-      
-      <button class="lock" type="button" disabled>Lock</button>
-    </div>
+    <button class="lock" type="button" id="lock">Lock</button>
   </header>
 
   <section class="hero">
     <div class="face">
       <span class="halo" aria-hidden="true"></span>
       <svg class="cat" viewBox="0 0 120 112" aria-hidden="true" focusable="false">
-  <defs>
-    <clipPath id="eyeL"><ellipse cx="44" cy="56" rx="8.6" ry="9"/></clipPath>
-    <clipPath id="eyeR"><ellipse cx="76" cy="56" rx="8.6" ry="9"/></clipPath>
-  </defs>
-
-  <path class="head" d="M60 22 C81 22, 97 33, 98.5 53 C100 73, 86 95, 60 95
-                        C34 95, 20 73, 21.5 53 C23 33, 39 22, 60 22 Z"/>
-
-  <ellipse class="muzzle" cx="51" cy="72" rx="13" ry="10"/>
-  <ellipse class="muzzle" cx="69" cy="72" rx="13" ry="10"/>
-  <ellipse class="muzzle" cx="60" cy="78" rx="11.5" ry="8.5"/>
-
-  <g clip-path="url(#eyeL)">
-    <ellipse class="iris" cx="44" cy="56" rx="8.6" ry="9"/>
-    <ellipse class="pupil" cx="44" cy="56" rx="5" ry="5"/>
-    <circle class="glint" cx="46.8" cy="52.4" r="2.4"/>
-    <circle class="glint" cx="41.2" cy="59.6" r="1.1"/>
-    <rect class="lid" x="34" y="26" width="21" height="20"/>
-  </g>
-  <g clip-path="url(#eyeR)">
-    <ellipse class="iris" cx="76" cy="56" rx="8.6" ry="9"/>
-    <ellipse class="pupil" cx="76" cy="56" rx="5" ry="5"/>
-    <circle class="glint" cx="78.8" cy="52.4" r="2.4"/>
-    <circle class="glint" cx="73.2" cy="59.6" r="1.1"/>
-    <rect class="lid" x="65" y="26" width="21" height="20"/>
-  </g>
-
-  <path class="shut" d="M38 56 q6 5.5 12 0"/>
-  <path class="shut" d="M70 56 q6 5.5 12 0"/>
-
-  <g class="zs">
-    <text class="zzz" x="94" y="28">z</text>
-    <text class="zzz z2" x="104" y="15">z</text>
-  </g><path class="ear" d="M30 45 L37 17 L59 31 Z"/>
-  <path class="ear" d="M90 45 L83 17 L61 31 Z"/>
-  <path class="inner-ear" d="M37 41 L41.5 25 L53 33 Z"/>
-  <path class="inner-ear" d="M83 41 L78.5 25 L67 33 Z"/>
-
-  <path class="nose" d="M55.8 64.5 h8.4 q0 4.6 -4.2 6.4 q-4.2 -1.8 -4.2 -6.4 z"/>
-  <path class="mouth" d="M60 72 q-3.6 3.8 -6.8 1"/>
-  <path class="mouth" d="M60 72 q3.6 3.8 6.8 1"/>
-
-  <path class="whisker" d="M13 60 L32 65"/>
-  <path class="whisker" d="M12 70 L32 70"/>
-  <path class="whisker" d="M15 80 L33 75"/>
-  <path class="whisker" d="M107 60 L88 65"/>
-  <path class="whisker" d="M108 70 L88 70"/>
-  <path class="whisker" d="M105 80 L87 75"/>
-
-  <path class="tie" d="M59 98 L43 91 L43 105 Z"/>
-  <path class="tie" d="M61 98 L77 91 L77 105 Z"/>
-  <path class="tie-weave" d="M47 94 L47 102 M52 93 L52 103 M68 93 L68 103 M73 94 L73 102"/>
-  <rect class="tie-knot" x="56" y="93.5" width="8" height="9" rx="3.5"/>
-</svg>
+        <defs>
+          <clipPath id="eyeL"><ellipse cx="44" cy="56" rx="8.6" ry="9"/></clipPath>
+          <clipPath id="eyeR"><ellipse cx="76" cy="56" rx="8.6" ry="9"/></clipPath>
+        </defs>
+        <path class="head" d="M60 22 C81 22, 97 33, 98.5 53 C100 73, 86 95, 60 95
+                              C34 95, 20 73, 21.5 53 C23 33, 39 22, 60 22 Z"/>
+        <ellipse class="muzzle" cx="51" cy="72" rx="13" ry="10"/>
+        <ellipse class="muzzle" cx="69" cy="72" rx="13" ry="10"/>
+        <ellipse class="muzzle" cx="60" cy="78" rx="11.5" ry="8.5"/>
+        <g clip-path="url(#eyeL)">
+          <ellipse class="iris" cx="44" cy="56" rx="8.6" ry="9"/>
+          <ellipse class="pupil" cx="44" cy="56" rx="5" ry="5"/>
+          <circle class="glint" cx="46.8" cy="52.4" r="2.4"/>
+          <circle class="glint" cx="41.2" cy="59.6" r="1.1"/>
+          <rect class="lid" x="34" y="26" width="21" height="20"/>
+        </g>
+        <g clip-path="url(#eyeR)">
+          <ellipse class="iris" cx="76" cy="56" rx="8.6" ry="9"/>
+          <ellipse class="pupil" cx="76" cy="56" rx="5" ry="5"/>
+          <circle class="glint" cx="78.8" cy="52.4" r="2.4"/>
+          <circle class="glint" cx="73.2" cy="59.6" r="1.1"/>
+          <rect class="lid" x="65" y="26" width="21" height="20"/>
+        </g>
+        <path class="shut" d="M38 56 q6 5.5 12 0"/>
+        <path class="shut" d="M70 56 q6 5.5 12 0"/>
+        <g class="zs">
+          <text class="zzz" x="94" y="28">z</text>
+          <text class="zzz z2" x="104" y="15">z</text>
+        </g>
+        <path class="ear" d="M30 45 L37 17 L59 31 Z"/>
+        <path class="ear" d="M90 45 L83 17 L61 31 Z"/>
+        <path class="inner-ear" d="M37 41 L41.5 25 L53 33 Z"/>
+        <path class="inner-ear" d="M83 41 L78.5 25 L67 33 Z"/>
+        <path class="nose" d="M55.8 64.5 h8.4 q0 4.6 -4.2 6.4 q-4.2 -1.8 -4.2 -6.4 z"/>
+        <path class="mouth" d="M60 72 q-3.6 3.8 -6.8 1"/>
+        <path class="mouth" d="M60 72 q3.6 3.8 6.8 1"/>
+        <path class="whisker" d="M13 60 L32 65"/>
+        <path class="whisker" d="M12 70 L32 70"/>
+        <path class="whisker" d="M15 80 L33 75"/>
+        <path class="whisker" d="M107 60 L88 65"/>
+        <path class="whisker" d="M108 70 L88 70"/>
+        <path class="whisker" d="M105 80 L87 75"/>
+        <path class="tie" d="M59 98 L43 91 L43 105 Z"/>
+        <path class="tie" d="M61 98 L77 91 L77 105 Z"/>
+        <path class="tie-weave" d="M47 94 L47 102 M52 93 L52 103 M68 93 L68 103 M73 94 L73 102"/>
+        <rect class="tie-knot" x="56" y="93.5" width="8" height="9" rx="3.5"/>
+      </svg>
     </div>
 
-    
-      <h1 class="status">Keeping watch</h1>
-      <p class="blurb">Eyes on the floor. You&rsquo;ll get a message if he hops down.</p>
-      
-    
+    <h1 class="status" id="status">Having a nap</h1>
+    <p class="blurb" id="blurb">Sentry&rsquo;s asleep, so he can pad about wherever he likes.</p>
+    <div class="waking"><p>Waking up</p><div class="track"><i></i></div></div>
   </section>
 
-  <div class="inert">
-    
-    <button class="go" type="button" disabled>Stop watching</button>
-  </div>
+  <button class="go" type="button" id="go">Start watching</button>
 
   <dl class="card">
-    <div class="fact">
-      <dt>Last message</dt>
-      <dd class="">3h 20m ago</dd>
-    </div>
-    <div class="fact">
-      <dt>Gap between messages</dt>
-      <dd>30 sec</dd>
-    </div>
-    <div class="fact">
-      <dt>Night shift</dt>
-      <dd class="">17:00 – 01:30</dd>
-    </div>
-    
-      <div class="fact">
-        <dt>Messages go to</dt>
-        <dd>ginger</dd>
-      </div>
-    
+    <div class="fact"><dt>Last message</dt><dd class="soft" id="lastmsg">None yet</dd></div>
+    <div class="fact"><dt>Gap between messages</dt><dd>30 sec</dd></div>
+    <div class="fact"><dt>Night shift</dt><dd>17:00 – 01:30</dd></div>
+    <div class="fact"><dt>Messages go to</dt><dd>ginger</dd></div>
   </dl>
 
-  
-  <div class="inert">
-    
-    <button class="test" type="button" disabled>
-      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10.5 13.5"/><path d="M21 3l-6.6 18-3.9-7.5L3 9.6z"/></svg>
-      Send a test message
-    </button>
-  </div>
-  
+  <button class="test" type="button" id="test">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10.5 13.5"/><path d="M21 3l-6.6 18-3.9-7.5L3 9.6z"/></svg>
+    Send a test message
+  </button>
 
   <section>
     <h2 class="head2">Recent activity</h2>
-    
-      <ul class="events">
-        
-          <li class="ev ev-alert">
-            <svg class="paw" aria-hidden="true"><use href="#paw"/></svg>
-            <span>He&rsquo;s on the floor</span>
-            <time>02:41</time>
-          </li>
-        
-          <li class="ev ev-suppressed">
-            <svg class="paw" aria-hidden="true"><use href="#paw"/></svg>
-            <span>Just messaged, holding off</span>
-            <time>02:41</time>
-          </li>
-        
-          <li class="ev ev-seen">
-            <svg class="paw" aria-hidden="true"><use href="#paw"/></svg>
-            <span>Spotted him, wasn&rsquo;t watching</span>
-            <time>02:38</time>
-          </li>
-        
-          <li class="ev ev-test">
-            <svg class="paw" aria-hidden="true"><use href="#paw"/></svg>
-            <span>Test message sent</span>
-            <time>23:10</time>
-          </li>
-        
-          <li class="ev ev-arm">
-            <svg class="paw" aria-hidden="true"><use href="#paw"/></svg>
-            <span>Started watching</span>
-            <time>23:04</time>
-          </li>
-        
-      </ul>
-    
+    <ul class="events" id="events"></ul>
   </section>
 
+  <button class="simulate" type="button" id="sim">Simulate: he steps onto the floor</button>
+
+  <p class="note">
+    Interactive demo — the interface is the real one, but the camera, detector and
+    Telegram calls are simulated in your browser. The live page contains no JavaScript
+    at all; every animation there is CSS on clipped SVG.
+  </p>
 </main>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+  const app = document.getElementById('app');
+  const statusEl = document.getElementById('status');
+  const blurbEl = document.getElementById('blurb');
+  const goBtn = document.getElementById('go');
+  const eventsEl = document.getElementById('events');
+  const lastMsgEl = document.getElementById('lastmsg');
+  const toastsEl = document.getElementById('toasts');
+
+  const COOLDOWN_MS = 30000;
+  let armed = false, coolingUntil = 0, lastAlertAt = null;
+
+  const pad = n => String(n).padStart(2, '0');
+  const clock = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+
+  const LABELS = {
+    alert: "He's on the floor",
+    seen: "Spotted him, wasn't watching",
+    suppressed: 'Just messaged, holding off',
+    test: 'Test message sent',
+    arm: 'Started watching',
+    disarm: 'Stopped watching'
+  };
+
+  function addEvent(kind) {
+    const li = document.createElement('li');
+    li.className = 'ev ev-' + kind + ' new';
+    const svg = '<svg class="paw" aria-hidden="true"><use href="#paw"/></svg>';
+    li.innerHTML = svg + '<span></span><time>' + clock() + '</time>';
+    li.querySelector('span').textContent = LABELS[kind];
+    eventsEl.prepend(li);
+    while (eventsEl.children.length > 5) eventsEl.lastElementChild.remove();
+    setTimeout(() => li.classList.remove('new'), 400);
+  }
+
+  function toast(text) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    const icon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+      '<path d="M9.8 15.6 9.6 19c.4 0 .6-.2.8-.4l1.9-1.8 3.9 2.9c.7.4 1.2.2 1.4-.7l2.6-12c.2-1-.4-1.4-1-1.2L3.4 10c-1 .4-1 1 -.2 1.2l4.3 1.3 9.9-6.2c.5-.3.9-.1.5.2z"/></svg>';
+    t.innerHTML = icon + '<div><b>Cat Sentry</b><span></span></div>';
+    t.querySelector('span').textContent = text;
+    toastsEl.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('in'));
+    setTimeout(() => { t.classList.remove('in'); setTimeout(() => t.remove(), 350); }, 4500);
+  }
+
+  function refreshLastMessage() {
+    if (!lastAlertAt) return;
+    const mins = Math.floor((Date.now() - lastAlertAt) / 60000);
+    lastMsgEl.classList.remove('soft');
+    lastMsgEl.textContent = mins < 1 ? 'just now'
+      : mins < 60 ? mins + 'm ago'
+      : Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm ago';
+  }
+
+  function setState(next) {
+    armed = next;
+    app.className = 'app ' + (armed ? 'watching' : 'napping');
+    void app.offsetWidth;                       // restart the CSS animation
+    app.classList.add(armed ? 'anim-wake' : 'anim-sleep');
+    setTimeout(() => app.classList.remove('anim-wake', 'anim-sleep'), armed ? 2600 : 1500);
+
+    statusEl.textContent = armed ? 'Keeping watch' : 'Having a nap';
+    blurbEl.textContent = armed
+      ? "Eyes on the floor. You'll get a message if he hops down."
+      : "Sentry's asleep, so he can pad about wherever he likes.";
+    goBtn.textContent = armed ? 'Stop watching' : 'Start watching';
+    addEvent(armed ? 'arm' : 'disarm');
+  }
+
+  goBtn.addEventListener('click', () => setState(!armed));
+
+  document.getElementById('test').addEventListener('click', () => {
+    addEvent('test');
+    toast('Test message. Everything is working.');
+  });
+
+  document.getElementById('sim').addEventListener('click', () => {
+    if (!armed) { addEvent('seen'); return; }
+    if (Date.now() < coolingUntil) { addEvent('suppressed'); return; }
+    coolingUntil = Date.now() + COOLDOWN_MS;
+    lastAlertAt = Date.now();
+    addEvent('alert');
+    refreshLastMessage();
+    toast("He's off the bed and on the floor (" + clock() + "). Please come and pick him up.");
+  });
+
+  document.getElementById('lock').addEventListener('click', () => {
+    toast('The real page would lock here and ask for your PIN.');
+  });
+
+  setInterval(refreshLastMessage, 30000);
+})();
+</script>
 </body>
 </html>

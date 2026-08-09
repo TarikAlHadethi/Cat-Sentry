@@ -224,18 +224,19 @@
   <div class="wrap">
     <h2>The control page</h2>
     <p class="sub">
-      Arm and disarm from a phone. Ginger's eyes open as the system wakes and close when it
-      stands down — the state is readable across a dark room without reading a word.
+      Try it — this one works. Press <b>Start watching</b> to wake him, then
+      <b>Simulate: he steps onto the floor</b> to fire an alert and watch the cooldown
+      suppress the next one.
     </p>
     <div class="device">
-      <iframe src="demo.html" title="The Cat Sentry control page, shown in its armed state"
-              loading="lazy" scrolling="no"></iframe>
+      <iframe src="demo.html" title="Interactive demo of the Cat Sentry control page"
+              loading="lazy"></iframe>
     </div>
     <p class="caption">
-      The real page, rendered from the same template the running system serves — buttons
-      disabled here because there is no camera behind it. Every animation is CSS keyframes
-      on clipped SVG: the page ships a Content-Security-Policy with no
-      <code>script-src</code>, so it contains no JavaScript at all.
+      The interface is the real one. The camera, detector and Telegram calls are simulated
+      in your browser so the whole flow is playable. The live page contains
+      <b>no JavaScript at all</b> — it ships a Content-Security-Policy with no
+      <code>script-src</code>, so every animation there is CSS keyframes on clipped SVG.
     </p>
   </div>
 </section>
