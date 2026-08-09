@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFF7EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#241A15" media="(prefers-color-scheme: dark)">
-<title>Cat Sentry — interactive demo</title>
+<title>Cat Sentry — try the control page</title>
+<meta name="description" content="Interactive demo of the Cat Sentry control page: unlock with a PIN, arm the system, and watch a detection fire.">
 <style>
   :root{
     --bg:#FFF7EF; --surface:#FFFFFF; --surface-2:#FFF2E6; --line:#F3E2D2;
@@ -17,6 +18,7 @@
     --iris:#B0AB57; --pupil:#241B14; --nose:#C97F72;
     --tie:#8D7050; --tie-dark:#6E5539;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,'Cascadia Mono',Consolas,monospace;
     --r:22px;
   }
   @media (prefers-color-scheme:dark){
@@ -37,23 +39,9 @@
   button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
   :focus-visible{outline:3px solid var(--ginger-deep);outline-offset:3px;border-radius:6px}
 
-  .app{
-    max-width:440px;margin:0 auto;
-    padding:14px 20px 28px;
-    display:flex;flex-direction:column;gap:20px;
-  }
-
-  .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
-  .brand{display:flex;align-items:center;gap:9px;margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
-  .brand .paw{width:22px;height:22px;color:var(--ginger)}
-  .lock{
-    min-height:44px;padding:0 18px;border-radius:999px;
-    background:transparent;border:1.5px solid var(--line);color:var(--muted);font-size:14.5px;font-weight:600;
-  }
-  .lock:hover{border-color:var(--ginger);color:var(--ginger-deep)}
-
-  .hero{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:6px 0 2px}
-  .face{width:216px;height:202px;position:relative;display:grid;place-items:center}
+  /* ---------------- shared cat ---------------- */
+  .face{width:216px;height:202px;position:relative;display:grid;place-items:center;margin:0 auto}
+  .face.sm{width:186px;height:174px}
   .halo{
     position:absolute;top:26px;left:28px;width:160px;height:160px;border-radius:50%;
     background:radial-gradient(circle, var(--ginger-soft) 0%, transparent 70%);opacity:0;
@@ -61,7 +49,6 @@
   .watching .halo{opacity:1;animation:purr 4.5s ease-in-out infinite}
   @keyframes purr{0%,100%{transform:scale(.94);opacity:.75}50%{transform:scale(1.06);opacity:1}}
   .cat{width:100%;height:100%;position:relative}
-
   .head{fill:var(--fur)}
   .ear{fill:var(--fur);stroke:var(--fur);stroke-width:7;stroke-linejoin:round}
   .inner-ear{fill:var(--ear-in);stroke:var(--ear-in);stroke-width:4.5;stroke-linejoin:round}
@@ -77,7 +64,6 @@
   .tie{fill:var(--tie);stroke:var(--tie);stroke-width:3.4;stroke-linejoin:round}
   .tie-knot{fill:var(--tie-dark)}
   .tie-weave{fill:none;stroke:var(--tie-dark);stroke-width:1.2;opacity:.4}
-
   .zs{opacity:0}
   .napping .zs{opacity:1}
   .zzz{fill:var(--muted);font-size:17px;font-weight:700;font-family:var(--sans)}
@@ -85,7 +71,6 @@
   .napping .zzz{animation:drift 3.4s ease-in-out infinite}
   .napping .z2{animation-delay:.7s}
   @keyframes drift{0%,100%{opacity:.25;transform:translateY(2px)}50%{opacity:.9;transform:translateY(-3px)}}
-
   .lid{fill:var(--fur)}
   .watching .lid{transform:translateY(0)}
   .napping .lid{transform:translateY(20px)}
@@ -101,14 +86,55 @@
   @keyframes narrow{0%{rx:5px;ry:5px}100%{rx:3.4px;ry:6px}}
   @keyframes fade-in{from{opacity:0}}
 
+  /* ---------------- screens ---------------- */
+  .screen{max-width:440px;margin:0 auto;padding:18px 20px 34px}
+  .screen[hidden]{display:none}
+  .fade-in{animation:screen-in .4s ease}
+  @keyframes screen-in{from{opacity:0}}
+
+  /* ---------------- login ---------------- */
+  #login{min-height:100vh;display:flex;flex-direction:column;justify-content:center;text-align:center}
+  #login .lid{animation:hello 3.4s ease .4s both}
+  #login .shut{animation:hello-shut 3.4s ease .4s both}
+  @keyframes hello{0%,38%{transform:translateY(0)}44%{transform:translateY(20px)}50%,100%{transform:translateY(0)}}
+  @keyframes hello-shut{0%,40%{opacity:0}44%{opacity:1}48%,100%{opacity:0}}
+  #login h1{margin:6px 0 4px;font-size:25px;font-weight:800;letter-spacing:-.02em}
+  #login .sub{margin:0 0 24px;color:var(--muted);font-size:15.5px}
+  .pinbox{
+    width:100%;min-height:62px;border:1.5px solid var(--line);border-radius:18px;
+    background:var(--surface);display:flex;align-items:center;justify-content:center;gap:14px;
+    transition:border-color .2s ease;
+  }
+  .pinbox.active{border-color:var(--ginger)}
+  .pinbox i{
+    width:11px;height:11px;border-radius:50%;background:var(--line);
+    transition:background .15s ease,transform .15s ease;
+  }
+  .pinbox i.on{background:var(--ink);transform:scale(1.15)}
+  .unlock{
+    width:100%;min-height:60px;margin-top:12px;border-radius:18px;border:0;
+    background:var(--ginger);color:#3A2213;font-size:17.5px;font-weight:700;
+    box-shadow:0 8px 20px var(--shadow);transition:transform .12s ease,filter .12s ease;
+  }
+  .unlock:hover{filter:brightness(1.04)}
+  .unlock.press{transform:scale(.96);filter:brightness(.94)}
+  .typed{margin:16px 0 0;font-size:12.5px;color:var(--muted);min-height:18px}
+
+  /* ---------------- control page ---------------- */
+  #app{display:flex;flex-direction:column;gap:20px}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+  .brand{display:flex;align-items:center;gap:9px;margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .brand .paw{width:22px;height:22px;color:var(--ginger)}
+  .lock{
+    min-height:44px;padding:0 18px;border-radius:999px;
+    background:transparent;border:1.5px solid var(--line);color:var(--muted);font-size:14.5px;font-weight:600;
+  }
+  .lock:hover{border-color:var(--ginger);color:var(--ginger-deep)}
+  .hero{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:6px 0 2px}
   .status{margin:2px 0 0;font-size:32px;font-weight:800;letter-spacing:-.025em}
   .watching .status{color:var(--ginger-deep)}
   .blurb{margin:0;color:var(--muted);font-size:15.5px;max-width:30ch;min-height:47px}
-
-  .waking{
-    position:absolute;left:50%;bottom:0;transform:translateX(-50%);
-    width:min(280px,100%);margin:0;display:none;
-  }
+  .waking{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(280px,100%);margin:0;display:none}
   .anim-wake .waking{display:block;animation:waking-out .45s ease 2.05s forwards}
   .anim-wake .blurb{animation:blurb-back 2.5s ease forwards}
   @keyframes blurb-back{0%,76%{opacity:0}100%{opacity:1}}
@@ -118,7 +144,6 @@
   .anim-wake .track i{animation:fill 1.35s cubic-bezier(.35,0,.25,1) forwards}
   @keyframes fill{to{transform:scaleX(1)}}
   @keyframes waking-out{to{opacity:0}}
-
   .go{
     width:100%;min-height:64px;border-radius:20px;border:0;
     font-size:18.5px;font-weight:700;letter-spacing:-.01em;
@@ -129,14 +154,17 @@
   .go:active{transform:scale(.985)}
   .watching .go{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
   .watching .go:hover{background:var(--surface-2)}
-
   .card{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:2px 18px;margin:0}
   .fact{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:14px 0;border-top:1.5px solid var(--line)}
   .fact:first-child{border-top:0}
   .fact dt{color:var(--muted);font-size:14.5px;flex:none}
   .fact dd{margin:0;text-align:right;font-size:15.5px;font-weight:600}
   .fact dd.soft{color:var(--muted);font-weight:400}
-
+  /* values that would come from a live Frigate connection */
+  .offline{
+    font-family:var(--mono);font-size:15px;color:var(--muted);opacity:.7;
+    letter-spacing:.12em;border-bottom:1.5px dotted var(--muted);cursor:help;
+  }
   .test{
     width:100%;min-height:52px;border-radius:16px;
     background:var(--mint-soft);border:1.5px solid transparent;
@@ -145,7 +173,6 @@
   }
   .test:hover{border-color:var(--mint)}
   .test svg{width:18px;height:18px}
-
   .head2{margin:0 0 2px 3px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .events{list-style:none;margin:0;padding:0}
   .ev{display:flex;align-items:center;gap:12px;padding:12px 2px;border-top:1.5px solid var(--line);font-size:15px}
@@ -159,28 +186,28 @@
   .ev-seen .paw{color:var(--muted);opacity:.6}
   .ev.new{animation:slide-in .35s ease}
   @keyframes slide-in{from{opacity:0;transform:translateY(-6px)}}
+  .nothing{margin:0;padding:16px 2px;color:var(--muted);font-size:15px;display:flex;align-items:center;gap:10px}
+  .nothing svg{width:20px;height:20px;color:var(--line);flex:none}
 
-  /* ---------- demo-only chrome ---------- */
-  .simulate{
-    width:100%;min-height:50px;border-radius:14px;
-    background:transparent;border:1.5px dashed var(--line);
-    color:var(--muted);font-size:14.5px;font-weight:600;
+  /* ---------------- demo chrome ---------------- */
+  .simpanel{border:1.5px dashed var(--line);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+  .simpanel h3{margin:0;font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .simpanel p{margin:0;font-size:13.5px;color:var(--muted)}
+  .simbtn{
+    width:100%;min-height:48px;border-radius:14px;border:1.5px solid var(--line);
+    background:transparent;color:var(--ink);font-size:15px;font-weight:600;
   }
-  .simulate:hover{border-color:var(--ginger);color:var(--ginger-deep)}
-  .note{
-    margin:0;font-size:12.5px;line-height:1.5;color:var(--muted);text-align:center;
-    border-top:1.5px solid var(--line);padding-top:14px;
-  }
+  .simbtn:hover{border-color:var(--ginger);color:var(--ginger-deep)}
+  .note{margin:0;font-size:12.5px;line-height:1.55;color:var(--muted);text-align:center;border-top:1.5px solid var(--line);padding-top:16px}
+  .note a{color:var(--ginger-deep)}
 
   .toasts{
-    position:fixed;left:50%;transform:translateX(-50%);
-    bottom:16px;width:min(360px,calc(100% - 24px));
-    display:flex;flex-direction:column;gap:8px;z-index:50;pointer-events:none;
+    position:fixed;left:50%;transform:translateX(-50%);bottom:16px;
+    width:min(360px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px;z-index:50;pointer-events:none;
   }
   .toast{
     background:#229ED9;color:#fff;border-radius:14px;padding:12px 15px;
-    box-shadow:0 12px 30px rgba(0,0,0,.28);
-    display:flex;gap:11px;align-items:flex-start;
+    box-shadow:0 12px 30px rgba(0,0,0,.28);display:flex;gap:11px;align-items:flex-start;
     opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease;
   }
   .toast.in{opacity:1;transform:none}
@@ -204,68 +231,80 @@
     <circle cx="14.9" cy="6.2" r="2.8" fill="currentColor"/>
     <circle cx="19.4" cy="9.8" r="2.6" fill="currentColor"/>
   </symbol>
+  <symbol id="ginger" viewBox="0 0 120 112">
+    <defs>
+      <clipPath id="eyeL"><ellipse cx="44" cy="56" rx="8.6" ry="9"/></clipPath>
+      <clipPath id="eyeR"><ellipse cx="76" cy="56" rx="8.6" ry="9"/></clipPath>
+    </defs>
+    <path class="head" d="M60 22 C81 22, 97 33, 98.5 53 C100 73, 86 95, 60 95
+                          C34 95, 20 73, 21.5 53 C23 33, 39 22, 60 22 Z"/>
+    <ellipse class="muzzle" cx="51" cy="72" rx="13" ry="10"/>
+    <ellipse class="muzzle" cx="69" cy="72" rx="13" ry="10"/>
+    <ellipse class="muzzle" cx="60" cy="78" rx="11.5" ry="8.5"/>
+    <g clip-path="url(#eyeL)">
+      <ellipse class="iris" cx="44" cy="56" rx="8.6" ry="9"/>
+      <ellipse class="pupil" cx="44" cy="56" rx="5" ry="5"/>
+      <circle class="glint" cx="46.8" cy="52.4" r="2.4"/>
+      <circle class="glint" cx="41.2" cy="59.6" r="1.1"/>
+      <rect class="lid" x="34" y="26" width="21" height="20"/>
+    </g>
+    <g clip-path="url(#eyeR)">
+      <ellipse class="iris" cx="76" cy="56" rx="8.6" ry="9"/>
+      <ellipse class="pupil" cx="76" cy="56" rx="5" ry="5"/>
+      <circle class="glint" cx="78.8" cy="52.4" r="2.4"/>
+      <circle class="glint" cx="73.2" cy="59.6" r="1.1"/>
+      <rect class="lid" x="65" y="26" width="21" height="20"/>
+    </g>
+    <path class="shut" d="M38 56 q6 5.5 12 0"/>
+    <path class="shut" d="M70 56 q6 5.5 12 0"/>
+    <g class="zs">
+      <text class="zzz" x="94" y="28">z</text>
+      <text class="zzz z2" x="104" y="15">z</text>
+    </g>
+    <path class="ear" d="M30 45 L37 17 L59 31 Z"/>
+    <path class="ear" d="M90 45 L83 17 L61 31 Z"/>
+    <path class="inner-ear" d="M37 41 L41.5 25 L53 33 Z"/>
+    <path class="inner-ear" d="M83 41 L78.5 25 L67 33 Z"/>
+    <path class="nose" d="M55.8 64.5 h8.4 q0 4.6 -4.2 6.4 q-4.2 -1.8 -4.2 -6.4 z"/>
+    <path class="mouth" d="M60 72 q-3.6 3.8 -6.8 1"/>
+    <path class="mouth" d="M60 72 q3.6 3.8 6.8 1"/>
+    <path class="whisker" d="M13 60 L32 65"/>
+    <path class="whisker" d="M12 70 L32 70"/>
+    <path class="whisker" d="M15 80 L33 75"/>
+    <path class="whisker" d="M107 60 L88 65"/>
+    <path class="whisker" d="M108 70 L88 70"/>
+    <path class="whisker" d="M105 80 L87 75"/>
+    <path class="tie" d="M59 98 L43 91 L43 105 Z"/>
+    <path class="tie" d="M61 98 L77 91 L77 105 Z"/>
+    <path class="tie-weave" d="M47 94 L47 102 M52 93 L52 103 M68 93 L68 103 M73 94 L73 102"/>
+    <rect class="tie-knot" x="56" y="93.5" width="8" height="9" rx="3.5"/>
+  </symbol>
 </svg>
 
-<main class="app napping" id="app">
+<!-- ============ SCREEN 1: PIN ============ -->
+<main class="screen" id="login">
+  <div class="face"><svg class="cat" viewBox="0 0 120 112" aria-hidden="true"><use href="#ginger"/></svg></div>
+  <h1>Hello again</h1>
+  <p class="sub">Pop in your PIN to look after him.</p>
+  <div class="pinbox" id="pinbox">
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+  <button class="unlock" id="unlock" type="button">Unlock</button>
+  <p class="typed" id="typed"></p>
+</main>
 
+<!-- ============ SCREEN 2: CONTROL PAGE ============ -->
+<main class="screen napping" id="app" hidden>
   <header class="bar">
     <p class="brand"><svg class="paw" aria-hidden="true"><use href="#paw"/></svg>Cat&nbsp;Sentry</p>
     <button class="lock" type="button" id="lock">Lock</button>
   </header>
 
   <section class="hero">
-    <div class="face">
+    <div class="face sm">
       <span class="halo" aria-hidden="true"></span>
-      <svg class="cat" viewBox="0 0 120 112" aria-hidden="true" focusable="false">
-        <defs>
-          <clipPath id="eyeL"><ellipse cx="44" cy="56" rx="8.6" ry="9"/></clipPath>
-          <clipPath id="eyeR"><ellipse cx="76" cy="56" rx="8.6" ry="9"/></clipPath>
-        </defs>
-        <path class="head" d="M60 22 C81 22, 97 33, 98.5 53 C100 73, 86 95, 60 95
-                              C34 95, 20 73, 21.5 53 C23 33, 39 22, 60 22 Z"/>
-        <ellipse class="muzzle" cx="51" cy="72" rx="13" ry="10"/>
-        <ellipse class="muzzle" cx="69" cy="72" rx="13" ry="10"/>
-        <ellipse class="muzzle" cx="60" cy="78" rx="11.5" ry="8.5"/>
-        <g clip-path="url(#eyeL)">
-          <ellipse class="iris" cx="44" cy="56" rx="8.6" ry="9"/>
-          <ellipse class="pupil" cx="44" cy="56" rx="5" ry="5"/>
-          <circle class="glint" cx="46.8" cy="52.4" r="2.4"/>
-          <circle class="glint" cx="41.2" cy="59.6" r="1.1"/>
-          <rect class="lid" x="34" y="26" width="21" height="20"/>
-        </g>
-        <g clip-path="url(#eyeR)">
-          <ellipse class="iris" cx="76" cy="56" rx="8.6" ry="9"/>
-          <ellipse class="pupil" cx="76" cy="56" rx="5" ry="5"/>
-          <circle class="glint" cx="78.8" cy="52.4" r="2.4"/>
-          <circle class="glint" cx="73.2" cy="59.6" r="1.1"/>
-          <rect class="lid" x="65" y="26" width="21" height="20"/>
-        </g>
-        <path class="shut" d="M38 56 q6 5.5 12 0"/>
-        <path class="shut" d="M70 56 q6 5.5 12 0"/>
-        <g class="zs">
-          <text class="zzz" x="94" y="28">z</text>
-          <text class="zzz z2" x="104" y="15">z</text>
-        </g>
-        <path class="ear" d="M30 45 L37 17 L59 31 Z"/>
-        <path class="ear" d="M90 45 L83 17 L61 31 Z"/>
-        <path class="inner-ear" d="M37 41 L41.5 25 L53 33 Z"/>
-        <path class="inner-ear" d="M83 41 L78.5 25 L67 33 Z"/>
-        <path class="nose" d="M55.8 64.5 h8.4 q0 4.6 -4.2 6.4 q-4.2 -1.8 -4.2 -6.4 z"/>
-        <path class="mouth" d="M60 72 q-3.6 3.8 -6.8 1"/>
-        <path class="mouth" d="M60 72 q3.6 3.8 6.8 1"/>
-        <path class="whisker" d="M13 60 L32 65"/>
-        <path class="whisker" d="M12 70 L32 70"/>
-        <path class="whisker" d="M15 80 L33 75"/>
-        <path class="whisker" d="M107 60 L88 65"/>
-        <path class="whisker" d="M108 70 L88 70"/>
-        <path class="whisker" d="M105 80 L87 75"/>
-        <path class="tie" d="M59 98 L43 91 L43 105 Z"/>
-        <path class="tie" d="M61 98 L77 91 L77 105 Z"/>
-        <path class="tie-weave" d="M47 94 L47 102 M52 93 L52 103 M68 93 L68 103 M73 94 L73 102"/>
-        <rect class="tie-knot" x="56" y="93.5" width="8" height="9" rx="3.5"/>
-      </svg>
+      <svg class="cat" viewBox="0 0 120 112" aria-hidden="true"><use href="#ginger"/></svg>
     </div>
-
     <h1 class="status" id="status">Having a nap</h1>
     <p class="blurb" id="blurb">Sentry&rsquo;s asleep, so he can pad about wherever he likes.</p>
     <div class="waking"><p>Waking up</p><div class="track"><i></i></div></div>
@@ -278,6 +317,14 @@
     <div class="fact"><dt>Gap between messages</dt><dd>30 sec</dd></div>
     <div class="fact"><dt>Night shift</dt><dd>17:00 – 01:30</dd></div>
     <div class="fact"><dt>Messages go to</dt><dd>ginger</dd></div>
+    <div class="fact">
+      <dt>Camera</dt>
+      <dd><span class="offline" title="Live value — needs a connection to Frigate on the local network">~~~~ fps</span></dd>
+    </div>
+    <div class="fact">
+      <dt>Detector</dt>
+      <dd><span class="offline" title="Live value — needs a connection to Frigate on the local network">~~~~ ms</span></dd>
+    </div>
   </dl>
 
   <button class="test" type="button" id="test">
@@ -288,14 +335,22 @@
   <section>
     <h2 class="head2">Recent activity</h2>
     <ul class="events" id="events"></ul>
+    <p class="nothing" id="nothing"><svg aria-hidden="true"><use href="#paw"/></svg>Nothing yet — all quiet.</p>
   </section>
 
-  <button class="simulate" type="button" id="sim">Simulate: he steps onto the floor</button>
+  <div class="simpanel">
+    <h3>Demo controls</h3>
+    <p>There is no camera here, so trigger the detector by hand.</p>
+    <button class="simbtn" type="button" id="sim">He steps onto the floor</button>
+  </div>
 
   <p class="note">
-    Interactive demo — the interface is the real one, but the camera, detector and
-    Telegram calls are simulated in your browser. The live page contains no JavaScript
-    at all; every animation there is CSS on clipped SVG.
+    The interface is exactly what runs at home. The camera, detector and Telegram calls are
+    simulated in your browser; values marked <span class="offline">~~~~</span> would come from
+    a live Frigate connection on the local network.<br><br>
+    The real page contains <b>no JavaScript at all</b> — it ships a Content-Security-Policy
+    with no <code>script-src</code>, so every animation there is CSS on clipped SVG.
+    <a href="index.html">Back to the write-up</a>
   </p>
 </main>
 
@@ -303,20 +358,61 @@
 
 <script>
 (() => {
-  const app = document.getElementById('app');
-  const statusEl = document.getElementById('status');
-  const blurbEl = document.getElementById('blurb');
-  const goBtn = document.getElementById('go');
-  const eventsEl = document.getElementById('events');
-  const lastMsgEl = document.getElementById('lastmsg');
-  const toastsEl = document.getElementById('toasts');
+  const $ = id => document.getElementById(id);
+  const loginEl = $('login'), appEl = $('app'), pinbox = $('pinbox'), typedEl = $('typed');
+  const statusEl = $('status'), blurbEl = $('blurb'), goBtn = $('go');
+  const eventsEl = $('events'), nothingEl = $('nothing'), lastMsgEl = $('lastmsg'), toastsEl = $('toasts');
+  const dots = [...pinbox.querySelectorAll('i')];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const COOLDOWN_MS = 30000;
-  let armed = false, coolingUntil = 0, lastAlertAt = null;
+  let armed = false, coolingUntil = 0, lastAlertAt = null, unlocking = false;
 
   const pad = n => String(n).padStart(2, '0');
   const clock = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+  const wait = ms => new Promise(r => setTimeout(r, ms));
 
+  // ---------- PIN screen ----------
+  async function playUnlock() {
+    if (unlocking) return;
+    unlocking = true;
+    pinbox.classList.add('active');
+    typedEl.textContent = 'typing…';
+    for (let i = 0; i < dots.length; i++) {
+      await wait(reduced ? 0 : 150);
+      dots[i].classList.add('on');
+    }
+    typedEl.textContent = 'PIN accepted';
+    await wait(reduced ? 0 : 320);
+    $('unlock').classList.add('press');
+    await wait(reduced ? 0 : 220);
+    enterApp();
+  }
+
+  function enterApp() {
+    loginEl.hidden = true;
+    appEl.hidden = false;
+    appEl.classList.add('fade-in');
+    window.scrollTo(0, 0);
+  }
+
+  function backToLogin() {
+    appEl.hidden = true;
+    loginEl.hidden = false;
+    loginEl.classList.add('fade-in');
+    dots.forEach(d => d.classList.remove('on'));
+    pinbox.classList.remove('active');
+    $('unlock').classList.remove('press');
+    typedEl.textContent = '';
+    unlocking = false;
+    window.scrollTo(0, 0);
+    setTimeout(playUnlock, 1400);
+  }
+
+  $('unlock').addEventListener('click', () => { if (!unlocking) playUnlock(); else enterApp(); });
+  setTimeout(playUnlock, reduced ? 200 : 1500);
+
+  // ---------- control page ----------
   const LABELS = {
     alert: "He's on the floor",
     seen: "Spotted him, wasn't watching",
@@ -327,10 +423,10 @@
   };
 
   function addEvent(kind) {
+    nothingEl.hidden = true;
     const li = document.createElement('li');
     li.className = 'ev ev-' + kind + ' new';
-    const svg = '<svg class="paw" aria-hidden="true"><use href="#paw"/></svg>';
-    li.innerHTML = svg + '<span></span><time>' + clock() + '</time>';
+    li.innerHTML = '<svg class="paw" aria-hidden="true"><use href="#paw"/></svg><span></span><time>' + clock() + '</time>';
     li.querySelector('span').textContent = LABELS[kind];
     eventsEl.prepend(li);
     while (eventsEl.children.length > 5) eventsEl.lastElementChild.remove();
@@ -340,9 +436,9 @@
   function toast(text) {
     const t = document.createElement('div');
     t.className = 'toast';
-    const icon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
-      '<path d="M9.8 15.6 9.6 19c.4 0 .6-.2.8-.4l1.9-1.8 3.9 2.9c.7.4 1.2.2 1.4-.7l2.6-12c.2-1-.4-1.4-1-1.2L3.4 10c-1 .4-1 1 -.2 1.2l4.3 1.3 9.9-6.2c.5-.3.9-.1.5.2z"/></svg>';
-    t.innerHTML = icon + '<div><b>Cat Sentry</b><span></span></div>';
+    t.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+      '<path d="M9.8 15.6 9.6 19c.4 0 .6-.2.8-.4l1.9-1.8 3.9 2.9c.7.4 1.2.2 1.4-.7l2.6-12c.2-1-.4-1.4-1-1.2L3.4 10c-1 .4-1 1 -.2 1.2l4.3 1.3 9.9-6.2c.5-.3.9-.1.5.2z"/>' +
+      '</svg><div><b>Cat Sentry</b><span></span></div>';
     t.querySelector('span').textContent = text;
     toastsEl.appendChild(t);
     requestAnimationFrame(() => t.classList.add('in'));
@@ -360,11 +456,10 @@
 
   function setState(next) {
     armed = next;
-    app.className = 'app ' + (armed ? 'watching' : 'napping');
-    void app.offsetWidth;                       // restart the CSS animation
-    app.classList.add(armed ? 'anim-wake' : 'anim-sleep');
-    setTimeout(() => app.classList.remove('anim-wake', 'anim-sleep'), armed ? 2600 : 1500);
-
+    appEl.className = 'screen ' + (armed ? 'watching' : 'napping');
+    void appEl.offsetWidth;                       // restart the CSS animation
+    appEl.classList.add(armed ? 'anim-wake' : 'anim-sleep');
+    setTimeout(() => appEl.classList.remove('anim-wake', 'anim-sleep'), armed ? 2600 : 1500);
     statusEl.textContent = armed ? 'Keeping watch' : 'Having a nap';
     blurbEl.textContent = armed
       ? "Eyes on the floor. You'll get a message if he hops down."
@@ -375,12 +470,12 @@
 
   goBtn.addEventListener('click', () => setState(!armed));
 
-  document.getElementById('test').addEventListener('click', () => {
+  $('test').addEventListener('click', () => {
     addEvent('test');
     toast('Test message. Everything is working.');
   });
 
-  document.getElementById('sim').addEventListener('click', () => {
+  $('sim').addEventListener('click', () => {
     if (!armed) { addEvent('seen'); return; }
     if (Date.now() < coolingUntil) { addEvent('suppressed'); return; }
     coolingUntil = Date.now() + COOLDOWN_MS;
@@ -390,10 +485,7 @@
     toast("He's off the bed and on the floor (" + clock() + "). Please come and pick him up.");
   });
 
-  document.getElementById('lock').addEventListener('click', () => {
-    toast('The real page would lock here and ask for your PIN.');
-  });
-
+  $('lock').addEventListener('click', backToLogin);
   setInterval(refreshLastMessage, 30000);
 })();
 </script>

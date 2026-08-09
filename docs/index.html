@@ -206,8 +206,8 @@
       before the carpet suffers. It stays completely silent when the only thing moving is you.
     </p>
     <div class="cta">
-      <a class="btn" href="https://github.com/TarikHassanAlHadethi/Cat-Sentry">Read the source</a>
-      <a class="btn ghost" href="#how">How it works</a>
+      <a class="btn" href="demo.html">Try the demo</a>
+      <a class="btn ghost" href="https://github.com/TarikHassanAlHadethi/Cat-Sentry">Read the source</a>
     </div>
   </div>
 </header>
@@ -224,19 +224,20 @@
   <div class="wrap">
     <h2>The control page</h2>
     <p class="sub">
-      Try it — this one works. Press <b>Start watching</b> to wake him, then
-      <b>Simulate: he steps onto the floor</b> to fire an alert and watch the cooldown
-      suppress the next one.
+      A working copy runs below — unlock it, wake him up, then trigger a detection and watch
+      the cooldown swallow the next one. <a href="demo.html">Open it full screen</a> if the
+      frame is cramped.
     </p>
     <div class="device">
       <iframe src="demo.html" title="Interactive demo of the Cat Sentry control page"
               loading="lazy"></iframe>
     </div>
     <p class="caption">
-      The interface is the real one. The camera, detector and Telegram calls are simulated
-      in your browser so the whole flow is playable. The live page contains
-      <b>no JavaScript at all</b> — it ships a Content-Security-Policy with no
-      <code>script-src</code>, so every animation there is CSS keyframes on clipped SVG.
+      The interface is exactly what runs at home. The camera, detector and Telegram calls are
+      simulated in your browser; values marked <code>~~~~</code> would come from a live
+      Frigate connection. The real page contains <b>no JavaScript at all</b> — it ships a
+      Content-Security-Policy with no <code>script-src</code>, so every animation there is CSS
+      keyframes on clipped SVG.
     </p>
   </div>
 </section>
