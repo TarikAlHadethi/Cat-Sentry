@@ -88,7 +88,9 @@
 
   /* ---------------- screens ---------------- */
   .screen{max-width:440px;margin:0 auto;padding:18px 20px 34px}
-  .screen[hidden]{display:none}
+  /* Must out-rank the #login / #app id selectors below, which set display.
+     Without !important the id wins and [hidden] does nothing at all. */
+  [hidden]{display:none!important}
   .fade-in{animation:screen-in .4s ease}
   @keyframes screen-in{from{opacity:0}}
 
@@ -393,6 +395,7 @@
     loginEl.hidden = true;
     appEl.hidden = false;
     appEl.classList.add('fade-in');
+    $('unlock').classList.remove('press');   // don't leave it stuck down
     window.scrollTo(0, 0);
   }
 
