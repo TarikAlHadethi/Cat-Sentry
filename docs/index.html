@@ -90,6 +90,21 @@
   .card h3{margin:0 0 8px;font-size:17.5px;font-weight:700}
   .card p{margin:0;color:var(--muted);font-size:15.5px}
 
+  /* ---------- device preview ---------- */
+  .device{
+    width:min(390px,100%);margin:0 auto;
+    border:10px solid var(--line);border-radius:38px;
+    background:var(--bg);box-shadow:0 24px 60px var(--shadow);
+    overflow:hidden;
+  }
+  /* Sized to the rendered page height so the whole thing is visible and there
+     is no nested scrollbar to fight on touch. */
+  .device iframe{display:block;width:100%;height:1150px;border:0;background:var(--bg)}
+  .caption{
+    max-width:52ch;margin:20px auto 0;text-align:center;
+    color:var(--muted);font-size:15px;
+  }
+
   /* ---------- pipeline ---------- */
   .flow{display:flex;flex-direction:column;gap:0;max-width:560px}
   .step{
@@ -204,6 +219,26 @@
     <div class="stat"><b>Zero</b><span>video ever written to disk</span></div>
   </div>
 </div>
+
+<section id="interface">
+  <div class="wrap">
+    <h2>The control page</h2>
+    <p class="sub">
+      Arm and disarm from a phone. Ginger's eyes open as the system wakes and close when it
+      stands down — the state is readable across a dark room without reading a word.
+    </p>
+    <div class="device">
+      <iframe src="demo.html" title="The Cat Sentry control page, shown in its armed state"
+              loading="lazy" scrolling="no"></iframe>
+    </div>
+    <p class="caption">
+      The real page, rendered from the same template the running system serves — buttons
+      disabled here because there is no camera behind it. Every animation is CSS keyframes
+      on clipped SVG: the page ships a Content-Security-Policy with no
+      <code>script-src</code>, so it contains no JavaScript at all.
+    </p>
+  </div>
+</section>
 
 <section id="how">
   <div class="wrap">
