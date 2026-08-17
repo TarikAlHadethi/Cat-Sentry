@@ -8,12 +8,12 @@ silent when the only thing moving is me.
 Runs on hardware I already owned. Total spend: **about USD 18** for a single camera.
 No cloud, no subscription, no footage stored.
 
-### ▶ [Try the control page](https://tarikhassanalhadethi.github.io/Cat-Sentry/demo.html)
+### ▶ [Try the control page](https://tarikalhadethi.github.io/Cat-Sentry/demo.html)
 
 A working copy of the real interface: unlock it with the PIN, wake the system up, then
 trigger a detection and watch the cooldown swallow the next one. Nothing to install.
 
-Or read the [full write-up](https://tarikhassanalhadethi.github.io/Cat-Sentry/) — the
+Or read the [full write-up](https://tarikalhadethi.github.io/Cat-Sentry/) — the
 architecture, the design decisions, and the three upstream bugs that took longest to find.
 
 ---
