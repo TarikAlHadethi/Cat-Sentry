@@ -77,7 +77,7 @@ per-pixel, so the bed is excluded *geometrically* rather than probabilistically.
                                     │
                               alerter (Python)
                              ├─ armed?      → file-backed state
-                             ├─ cooldown?   → 10 min
+                             ├─ cooldown?   → 30 s
                              └─ Telegram    → group chat with parents
                                     │
                              Flask control page :8080
@@ -99,14 +99,19 @@ itself — Frigate's own documentation is explicit that motion masks do not prev
 detection, since tracking continues into a masked region once an object exists. Relying on
 the mask alone would be a mistake; the zone test is what actually holds.
 
-**Tuned to prefer false positives.** `threshold: 0.55` is permissive. The cost asymmetry is
+**Tuned to prefer false positives.** `threshold: 0.50` is permissive. The cost asymmetry is
 stark — a false ping is one unnecessary message; a miss is a soiled mattress. Optimising
 for precision here would be optimising the wrong metric entirely.
 
-**10 fps rather than 5.** A cat crossing the zone is visible for 2–4 seconds, so at 10 fps
-that's 20–40 frames and the system only needs *one* to clear threshold. Detection
-reliability is not a single coin flip; doubling the frame rate roughly doubles the chances
-per crossing, at negligible cost for one camera.
+**15 fps — the camera's ceiling.** A cat crossing the zone is visible for 2–4 seconds, so
+at 15 fps that's 30–60 frames and the system only needs *one* to clear threshold. Detection
+reliability is not a single coin flip; more frames per crossing means more chances, at
+negligible cost for one camera. I probed the stream to confirm 15 is the hardware limit —
+`avg_frame_rate=15` — so asking for more would only resample the same frames.
+
+Note that `max_disappeared` and `inertia` are counted in *frames*, not seconds. Raising fps
+silently shortens both windows, so they were rescaled at the same time (`max_disappeared`
+25 → 38 keeps the tracking window at ≈2.5 s).
 
 **`inertia: 3`.** An object must persist across three frames before the zone counts as
 occupied — enough to stop a paw dangling off the mattress edge from firing.
@@ -138,8 +143,11 @@ reachable from anything.
 **Arm state in a file, not memory.** Survives container restarts. A restart at 2am that
 silently disarmed the system would be the worst possible failure mode.
 
-**Cooldown of 10 minutes.** One restless night should not send twelve messages. Alert
-fatigue would kill this system's usefulness faster than any technical fault.
+**Cooldown, currently 30 seconds.** It started at 10 minutes on the reasoning that alert
+fatigue would kill the system's usefulness faster than any technical fault. In practice I
+preferred to be over-notified than to miss one, so it was dropped to 30 seconds — the floor
+the alerter enforces, chosen because Telegram rate-limits bots to roughly 20 messages per
+minute per chat and exceeding that would start dropping the message that mattered.
 
 **The alerter never dies from bad input.** Every MQTT handler and HTTP send swallows and
 logs. A crashed listener fails silently for hours; a dropped message fails once.
