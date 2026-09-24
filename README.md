@@ -6,7 +6,8 @@ family group so they can collect him before he pees on the carpet — and it sta
 silent when the only thing moving is me.
 
 Runs on hardware I already owned. Total spend: **about USD 18** for a single camera.
-No cloud, no subscription, no footage stored.
+Detection runs locally with no subscription, no video is recorded, and the only thing that
+leaves the house is a Telegram alert.
 
 ### ▶ [Try the control page](https://tarikalhadethi.github.io/Cat-Sentry/demo.html)
 

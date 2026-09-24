@@ -6,9 +6,9 @@
 <meta name="theme-color" content="#FFF7EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#241A15" media="(prefers-color-scheme: dark)">
 <title>Cat Sentry — a local camera that watches the floor, not the bed</title>
-<meta name="description" content="A self-hosted computer-vision alert system. When the cat steps off the bed at 3am it sends a Telegram message. No cloud, no subscription, no footage stored.">
+<meta name="description" content="A self-hosted computer-vision alert system. When the cat steps off the bed at 3am it sends a Telegram message. Local detection, no subscription, no video recorded.">
 <meta property="og:title" content="Cat Sentry">
-<meta property="og:description" content="A local computer-vision alert system that watches the floor beside a bed, not the bed itself. No cloud, no subscription, no footage stored.">
+<meta property="og:description" content="A local computer-vision alert system that watches the floor beside a bed, not the bed itself. Local detection, no subscription, no video recorded.">
 <meta property="og:type" content="website">
 <style>
   :root{
@@ -288,12 +288,14 @@
 <section>
   <div class="wrap">
     <div class="privacy">
-      <h2>Nothing leaves the house</h2>
+      <h2>Only a line of text leaves the house</h2>
       <p>
-        Recording is disabled by design — this is a bedroom. Frigate binds to localhost only,
-        the MQTT broker publishes no host ports at all, and the camera has no route to the
-        internet. The only outbound traffic is a line of text to Telegram. No footage is
-        stored, streamed or uploaded, ever.
+        Video recording is disabled by design, because this is a bedroom. Frigate binds to
+        localhost only, the MQTT broker publishes no host ports at all, and the camera has no
+        route to the internet. The only outbound traffic is a line of text to Telegram, and
+        nothing is streamed or uploaded. Event snapshots do stay on the machine: 142 were kept
+        while it was being tuned in August, and they should have been switched off once tuning
+        was done.
       </p>
       <p style="margin-top:14px">
         <b>Which is why there is no hosted demo.</b> A public instance would mean streaming a
@@ -328,8 +330,8 @@
   <div class="wrap">
     <h2>Three problems worth remembering</h2>
     <p class="sub">
-      The bugs that took longest were not in my code. These are the ones I would want to
-      talk about.
+      The bugs that took longest: one upstream in Frigate, and two in this project's own
+      compose file and health check. These are the ones I would want to talk about.
     </p>
     <div class="grid">
       <div class="card">
